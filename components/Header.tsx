@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { Content } from "@/lib/content.en";
-import { hrefFor, type Locale } from "@/lib/site";
+import { CONTACT, hrefFor, type Locale } from "@/lib/site";
 
 const LINKS = ["about", "paper", "stationery", "services", "group", "contact"] as const;
 
@@ -35,11 +35,18 @@ export function Header({ lang, t }: { lang: Locale; t: Content }) {
 
   return (
     <>
+      <div className="topbar">
+        <div className="wrap">
+          <a className="topbar__item" href={`tel:${CONTACT.phoneTel}`}>{CONTACT.phoneDisplay}</a>
+          <a className="topbar__item topbar__hide" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+          <span className="topbar__item topbar__hide topbar__end">{t.about.showroom.label}: {t.about.showroom.name}</span>
+        </div>
+      </div>
       <header className="header" data-scrolled={scrolled || open}>
         <div className="wrap header__inner">
           <Link href={hrefFor(lang, "")} className="brand" aria-label={`${t.siteName} — ${t.nav.home}`}>
-            <img src="/photos/Logo_Gold_noBg.png" alt="" width={46} height={46} />
-            <span>Deco-Land</span>
+            <img src="/photos/Logo_Gold_noBg.png" alt="" width={50} height={50} />
+            <span>DECO-LAND</span>
           </Link>
 
           <nav className="nav" aria-label="Primary">

@@ -16,14 +16,21 @@ export type Content = {
   };
   meta: Record<"home" | "about" | "paper" | "stationery" | "services" | "group" | "contact" | "privacy" | "notFound", { title: string; description: string }>;
   home: {
-    eyebrow: string; h1: [string, string]; lead: string; ctaPrimary: string; ctaSecondary: string;
-    dieLine: string;
+    /** Hero slider: one entry per campus photo, in the order the photos are listed in app/[lang]/page.tsx. */
+    slides: Array<{ tab: string; kicker: string; title: string; text: string }>;
+    ctaPrimary: string; ctaSecondary: string;
+    statement: string;
     proof: Array<{ k: string; label: string }>;
-    claim: string;
-    divisionsTitle: string;
-    divisions: Array<{ kicker: string; title: string; text: string; cta: string }>;
-    buyersKicker: string; buyersTitle: string; buyersText: string; buyersPoints: string[];
-    groupTitle: string; groupText: string; groupCta: string;
+    pillarsKicker: string;
+    pillars: Array<{ title: string; text: string; tags: string[]; cta: string }>;
+    catalogueKicker: string; catalogueTitle: string; catalogueText: string; catalogueCta: string;
+    brandsKicker: string; brandsTitle: string;
+    apoloKicker: string; apoloTitle: string; apoloText: string; apoloCta: string; apoloShop: string;
+    facilityKicker: string; facilityTitle: string; facilityText: string;
+    facilityPoints: Array<{ k: string; label: string }>;
+    servicesKicker: string; servicesTitle: string; servicesText: string;
+    services: Array<{ title: string; text: string }>;
+    groupKicker: string; groupTitle: string; groupText: string; groupCta: string;
     contactTitle: string; contactText: string;
   };
   about: {
@@ -132,52 +139,95 @@ export const en: Content = {
     notFound: { title: "Page not found | Deco-Land", description: "This page could not be found." },
   },
   home: {
-    eyebrow: "Deco-Land Group · Yangon",
-    h1: ["Paper,", "since 1997."],
-    lead: "Paper wholesale, APOLO® stationery and custom printing and packaging, from one Yangon house.",
-    ctaPrimary: "Send an enquiry",
-    ctaSecondary: "See what we supply",
-    dieLine: "Die line — paper cup",
-    proof: [
-      { k: "1997", label: "Year Deco-Land was founded" },
-      { k: "25,000 m²", label: "Manufacturing facility, Hlaing Thar Yar" },
-      { k: "200+", label: "People at Deco-Land" },
-    ],
-    claim: "Myanmar's No.1 paper wholesaler, and the main distributor of Paper One copy paper.",
-    divisionsTitle: "What Deco-Land does",
-    divisions: [
+    slides: [
       {
-        kicker: "01 — Paper",
-        title: "Paper wholesale",
-        text: "Copy, printing, packaging, special and stationery papers, supplied to distributors and end users.",
+        tab: "Hlaing Thar Yar campus",
+        kicker: "Deco-Land Group · since 1997",
+        title: "Myanmar's No.1 paper wholesaler.",
+        text: "Paper, APOLO® stationery and custom printing and packaging, from our 25,000 m² facility in Hlaing Thar Yar.",
+      },
+      {
+        tab: "Head office",
+        kicker: "Paper · Stationery · Print",
+        title: "One house for paper, stationery and print.",
+        text: "Printing, packaging, special and stationery papers, our own APOLO® brand, and custom production for businesses.",
+      },
+      {
+        tab: "Main gate",
+        kicker: "Paper One™ in Myanmar",
+        title: "Main distributor of Paper One copy paper.",
+        text: "Copy paper and a vast range of printing and packaging grades for distributors, printers and offices.",
+      },
+      {
+        tab: "Warehouse",
+        kicker: "For distributors and businesses",
+        title: "Paper stock for the whole trade.",
+        text: "Wholesale supply for distributors, shops, printers, corporate and government buyers.",
+      },
+    ],
+    ctaPrimary: "Send an enquiry",
+    ctaSecondary: "Explore our products",
+    statement: "More than 25 years of experience in Myanmar's paper industry.",
+    proof: [
+      { k: "1997", label: "Founded in Yangon" },
+      { k: "25,000 m²", label: "Facility in Hlaing Thar Yar" },
+      { k: "200+", label: "People at Deco-Land" },
+      { k: "No.1", label: "Paper wholesaler in Myanmar" },
+    ],
+    pillarsKicker: "What we do",
+    pillars: [
+      {
+        title: "Paper",
+        text: "We supply a vast range of paper, including printing, packaging, special and stationery papers, and we are the main distributor of Paper One™ copy paper in Myanmar.",
+        tags: ["Copy", "Printing", "Packaging", "Special", "Stationery"],
         cta: "Paper range",
       },
       {
-        kicker: "02 — APOLO®",
-        title: "Our stationery brand",
-        text: "Books, ledgers, vouchers, envelopes, files and desk supplies for schools and offices.",
+        title: "Stationery",
+        text: "APOLO® is our own stationery brand: books, ledgers, vouchers, envelopes, files and a wide range of school and office supplies, sold across the country.",
+        tags: ["Books", "Ledgers", "Vouchers", "Envelopes", "Files"],
         cta: "APOLO stationery",
       },
       {
-        kicker: "03 — Custom",
-        title: "Printing and packaging",
-        text: "Custom printed paper cups, plates and lunch boxes, commercial printing, and printed packaging made to your design.",
-        cta: "Services",
+        title: "Services",
+        text: "Mass production on customised orders: printed paper cups, plates and lunch boxes, commercial printing, and custom printed packaging.",
+        tags: ["Disposables", "Printing", "Packaging"],
+        cta: "Our services",
       },
     ],
-    buyersKicker: "For wholesale and procurement buyers",
-    buyersTitle: "One supplier for paper, stationery and print.",
-    buyersText: "Deco-Land supplies distributors, shops and businesses across paper, stationery and print. Talk to our sales team about steady supply and consistent grades.",
-    buyersPoints: [
-      "Five paper categories from copy paper to packaging board",
-      "APOLO stationery and custom printing from the same company",
-      "Direct contact by phone, Viber, Messenger or email",
+    catalogueKicker: "Paper range",
+    catalogueTitle: "Five categories, from copy paper to packaging board.",
+    catalogueText: "Art card, duplex, kraft liner, NCR, thermal rolls and more. Ask us for grades, weights and current availability.",
+    catalogueCta: "See all paper",
+    brandsKicker: "Brands we carry",
+    brandsTitle: "Leading copy paper brands, from one supplier.",
+    apoloKicker: "APOLO®",
+    apoloTitle: "Our own stationery brand.",
+    apoloText: "Exercise books, note books, hard cover, wire binding, sketch and colouring books, plus ledgers, vouchers, files and desk supplies.",
+    apoloCta: "The APOLO range",
+    apoloShop: "Shop APOLO online",
+    facilityKicker: "Our facility",
+    facilityTitle: "Built for supply at scale.",
+    facilityText: "Our head office, factory and warehouse sit on one campus in Hlaing Thar Yar Industrial Zone, with our showroom on Strand Road in Latha.",
+    facilityPoints: [
+      { k: "25,000 m²", label: "Hlaing Thar Yar campus" },
+      { k: "Strand Road", label: "Showroom, Latha Township" },
+      { k: "200+", label: "People" },
     ],
-    groupTitle: "Part of the Deco-Land Group.",
-    groupText: "Alongside paper and stationery, the group includes Main Label, Hitachi Elevator, Deco-TBSP and Modern Tech.",
+    servicesKicker: "Custom production",
+    servicesTitle: "Printed, packed and made to your order.",
+    servicesText: "We specialise in disposable items, printing and packaging services for businesses.",
+    services: [
+      { title: "Paper cups and bowls", text: "Custom printed cups, bowls, plates and lunch boxes." },
+      { title: "Printing", text: "Books, calendars, brochures, labels and business documents." },
+      { title: "Packaging", text: "Custom printed boxes and shopping bags in your sizes and designs." },
+    ],
+    groupKicker: "Deco-Land Group",
+    groupTitle: "Part of a wider group of Myanmar companies.",
+    groupText: "Label printing, elevators and escalators, security printing, and racking and pallets.",
     groupCta: "Meet the group",
-    contactTitle: "Talk to us your way.",
-    contactText: "Call, message or write. Tell us what you need and our sales team will come back to you.",
+    contactTitle: "Talk to our sales team.",
+    contactText: "Call, message on Viber or Messenger, or email us. Tell us what you need and we will come back to you.",
   },
   about: {
     kicker: "About",

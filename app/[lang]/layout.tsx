@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
-import { Fraunces, Instrument_Sans, IBM_Plex_Mono, Noto_Sans_Myanmar } from "next/font/google";
+import { Archivo, Instrument_Sans, IBM_Plex_Mono, Noto_Sans_Myanmar } from "next/font/google";
 import "../globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -9,7 +9,7 @@ import { Reveal } from "@/components/Reveal";
 import { getContent } from "@/lib/dict";
 import { CONTACT, LOCALES, SITE_URL, isLocale } from "@/lib/site";
 
-const fraunces = Fraunces({ subsets: ["latin"], axes: ["opsz", "SOFT"], style: ["normal", "italic"], variable: "--font-fraunces", display: "swap" });
+const archivo = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-archivo", display: "swap" });
 const instrument = Instrument_Sans({ subsets: ["latin"], variable: "--font-instrument", display: "swap" });
 const plexMono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-plex-mono", display: "swap" });
 const notoMy = Noto_Sans_Myanmar({ subsets: ["myanmar"], weight: ["400", "600"], variable: "--font-noto-my", display: "swap", preload: false });
@@ -46,7 +46,7 @@ export default async function LangLayout({ children, params }: { children: React
   };
 
   return (
-    <html lang={lang} className={`${fraunces.variable} ${instrument.variable} ${plexMono.variable} ${notoMy.variable}`}>
+    <html lang={lang} className={`${archivo.variable} ${instrument.variable} ${plexMono.variable} ${notoMy.variable}`}>
       <head>
         {/* Marks JS as running so [data-reveal] content may start hidden. */}
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
