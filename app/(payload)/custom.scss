@@ -1,0 +1,518 @@
+/* =============================================================
+   Deco-Land — Payload admin, styled like the WordPress admin.
+   Dark left nav, light grey canvas, white bordered panels, green
+   accents. Light theme only. Selectors were checked against
+   @payloadcms/ui 3.92 (nav__, app-header, table, doc-controls...).
+   ============================================================= */
+
+:root {
+  --deco-green: #00a850;
+  --deco-green-dark: #00803d;
+  --deco-green-deeper: #0a6a37;
+  --deco-ink: #072617;
+  --wp-nav: #1d2327;
+  --wp-nav-hover: #2c3338;
+  --wp-nav-text: #f0f0f1;
+  --wp-nav-muted: #a7aaad;
+  --wp-bg: #f0f0f1;
+  --wp-border: #c3c4c7;
+  --wp-input-border: #8c8f94;
+  --wp-head: #f6f7f7;
+  --wp-text: #1d2327;
+  --wp-text-soft: #50575e;
+}
+
+[data-theme="light"] {
+  --theme-bg: var(--wp-bg);
+  --theme-input-bg: #fff;
+  --theme-text: var(--wp-text);
+  --theme-border-color: var(--wp-border);
+  --theme-success-500: var(--deco-green-dark);
+}
+
+body {
+  background: var(--wp-bg);
+  color: var(--wp-text);
+}
+.template-default,
+.template-default__wrap {
+  background: var(--wp-bg);
+}
+
+/* ---------- Left nav (WordPress dark) ---------- */
+.nav {
+  background: var(--wp-nav) !important;
+  border-right: 0 !important;
+  color: var(--wp-nav-text);
+}
+.nav__wrap,
+.nav__scroll,
+.nav__header,
+.nav__controls {
+  background: transparent !important;
+}
+.nav a.nav__link,
+.nav__link {
+  color: var(--wp-nav-text) !important;
+  border-radius: 0;
+  margin: 0;
+  padding: 8px 14px;
+  font-size: 14px;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.nav a.nav__link:hover,
+.nav a.nav__link:focus-visible {
+  background: var(--wp-nav-hover) !important;
+  color: var(--deco-green) !important;
+}
+/* Payload renders the current item as a <div>. */
+.nav div.nav__link,
+.nav .nav__link.active {
+  background: var(--deco-green) !important;
+  color: #fff !important;
+  font-weight: 600;
+}
+.nav div.nav__link .nav__link-label,
+.nav .nav__link.active .nav__link-label {
+  color: #fff !important;
+}
+.nav .nav__link-indicator {
+  background: #fff !important;
+}
+.nav-group__toggle,
+.nav__label {
+  color: var(--wp-nav-muted) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 14px 14px 4px;
+}
+.nav-group__indicator svg,
+.nav-group__toggle svg {
+  color: var(--wp-nav-muted) !important;
+}
+.nav__controls a,
+.nav__controls button,
+.nav__log-out {
+  color: var(--wp-nav-muted) !important;
+}
+.nav__log-out:hover,
+.nav__controls a:hover {
+  color: var(--deco-green) !important;
+}
+.nav__scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.nav__scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+}
+
+/* ---------- Top bar ---------- */
+.app-header {
+  background: #fff !important;
+  border-bottom: 1px solid var(--wp-border);
+}
+.app-header__bg {
+  background: #fff !important;
+}
+.step-nav__home {
+  width: auto !important;
+  height: auto !important;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.deco-admin-icon {
+  display: block;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+/* ---------- Titles and labels ---------- */
+.list-header__title,
+.render-title {
+  font-size: 23px;
+  font-weight: 400;
+  color: var(--wp-text);
+}
+.field-label {
+  font-weight: 600;
+  color: var(--wp-text);
+}
+
+/* ---------- Buttons ---------- */
+.btn--style-primary {
+  background: var(--deco-green-dark) !important;
+  border: 1px solid var(--deco-green-dark) !important;
+  color: #fff !important;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.btn--style-primary:hover,
+.btn--style-primary:focus-visible {
+  background: var(--deco-green-deeper) !important;
+  border-color: var(--deco-green-deeper) !important;
+}
+.btn--style-secondary {
+  border-radius: 4px;
+  border-color: var(--deco-green-dark);
+  color: var(--deco-green-dark);
+}
+.btn--style-secondary:hover {
+  border-color: var(--deco-green-deeper);
+  color: var(--deco-green-deeper);
+}
+
+/* ---------- Cards ---------- */
+.card {
+  background: #fff;
+  border: 1px solid var(--wp-border);
+  border-radius: 4px;
+  box-shadow: none;
+}
+.card--has-onclick:hover {
+  border-color: var(--deco-green-dark);
+}
+
+/* ---------- List tables (WP "wp-list-table") ---------- */
+.table {
+  background: #fff;
+  border: 1px solid var(--wp-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.table thead th {
+  background: var(--wp-head);
+  color: var(--wp-text);
+  font-weight: 600;
+  border-bottom: 1px solid var(--wp-border);
+}
+.table tbody tr td {
+  background: #fff;
+  border-bottom: 1px solid #f0f0f1;
+}
+.table tbody tr:hover td {
+  background: #f0f6fc;
+}
+.table tbody tr:hover td a {
+  color: var(--deco-green-dark);
+}
+.list-controls,
+.collection-list__search-input {
+  border-radius: 4px;
+}
+
+/* ---------- Inputs (WP form look) ---------- */
+.field-type input:not([type="checkbox"]):not([type="radio"]),
+.field-type textarea,
+.field-type .rs__control {
+  background: #fff;
+  border: 1px solid var(--wp-input-border);
+  border-radius: 4px;
+}
+.field-type input:focus,
+.field-type textarea:focus,
+.field-type .rs__control--is-focused,
+.field-type .rs__control--menu-is-open {
+  border-color: var(--deco-green-dark) !important;
+  box-shadow: 0 0 0 1px var(--deco-green-dark) !important;
+  outline: 2px solid transparent;
+}
+
+/* ---------- Document edit: main column + Publish box ---------- */
+.doc-controls {
+  background: #fff;
+  border-bottom: 1px solid var(--wp-border);
+}
+.document-fields__sidebar-wrap {
+  background: #fff;
+  border: 1px solid var(--wp-border);
+  border-radius: 4px;
+  padding: 0;
+}
+.document-fields__sidebar-fields {
+  padding: 12px;
+}
+.doc-tabs .doc-tab--active {
+  color: var(--deco-green-dark);
+}
+.collapsible,
+.collapsible--style-default {
+  background: #fff;
+  border: 1px solid var(--wp-border);
+  border-radius: 4px;
+}
+.pill {
+  border-radius: 999px;
+}
+
+/* ---------- Sign-in ---------- */
+.template-minimal {
+  background: var(--wp-bg);
+}
+.template-minimal--width-normal {
+  max-width: 420px;
+}
+.template-minimal__wrap {
+  background: #fff;
+  border: 1px solid var(--wp-border);
+  border-top: 4px solid var(--deco-green);
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: 32px 32px 28px;
+}
+.login__brand {
+  margin: 0 auto 24px;
+  display: flex;
+  justify-content: center;
+}
+.login-fields .btn--style-primary,
+.template-minimal .btn--style-primary {
+  width: 100%;
+  margin-top: 8px;
+}
+.login a {
+  color: var(--deco-green-dark);
+}
+.deco-login-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+.deco-login-brand__mark {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+}
+.deco-login-brand__name {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--deco-ink);
+}
+.deco-login-brand__label {
+  font-size: 12px;
+  color: var(--wp-text-soft);
+}
+
+/* ---------- Dashboard (WordPress postboxes) ---------- */
+/* The dashboard replaces Payload's collection cards; the left nav has them. */
+.dashboard .collections,
+body:has(.deco-dash) .collections {
+  display: none !important;
+}
+
+.deco-dash {
+  color: var(--wp-text);
+  margin: 0 0 32px;
+}
+.deco-dash a {
+  color: var(--deco-green-dark);
+  text-decoration: none;
+}
+.deco-dash a:hover {
+  color: var(--deco-green-deeper);
+  text-decoration: underline;
+}
+.deco-cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+.deco-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+.deco-dash > .deco-box {
+  margin-bottom: 20px;
+}
+.deco-box {
+  background: #fff;
+  border: 1px solid var(--wp-border);
+  border-radius: 4px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+.deco-box__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--wp-border);
+}
+.deco-box__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--wp-text);
+}
+.deco-box__action {
+  font-size: 13px;
+}
+.deco-box__body {
+  padding: 12px;
+}
+
+.deco-welcome__hello {
+  margin: 0 0 6px;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--wp-text);
+}
+.deco-welcome__sub {
+  margin: 0 0 18px;
+  color: var(--wp-text-soft);
+}
+.deco-welcome__cols {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+.deco-welcome__cols h4 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--wp-text-soft);
+}
+.deco-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.deco-links li {
+  margin: 0;
+  padding: 4px 0;
+}
+
+.deco-glance,
+.deco-statuses {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 16px;
+}
+.deco-glance li,
+.deco-statuses li {
+  margin: 0;
+}
+.deco-glance a,
+.deco-statuses a {
+  display: block;
+  padding: 2px 0;
+}
+.deco-glance strong,
+.deco-statuses strong {
+  font-size: 15px;
+  color: var(--wp-text);
+}
+.deco-statuses {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding-bottom: 12px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid #f0f0f1;
+}
+
+.deco-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.deco-rows li {
+  margin: 0;
+  border-bottom: 1px solid #f0f0f1;
+}
+.deco-rows li:last-child {
+  border-bottom: 0;
+}
+.deco-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  color: var(--wp-text) !important;
+}
+.deco-row:hover {
+  text-decoration: none !important;
+  background: #f6f7f7;
+}
+.deco-row__main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+.deco-row__main strong {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.deco-row__main small {
+  color: var(--wp-text-soft);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.deco-row__date {
+  color: var(--wp-text-soft);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.deco-empty {
+  margin: 0;
+  padding: 8px 0;
+  color: var(--wp-text-soft);
+}
+
+.deco-badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: #f0f0f1;
+  color: var(--wp-text-soft);
+}
+.deco-badge--new {
+  background: #fcf0c9;
+  color: #7a5700;
+}
+.deco-badge--contacted {
+  background: #d9e8f7;
+  color: #135e96;
+}
+.deco-badge--quoted {
+  background: #e8e0f7;
+  color: #50358f;
+}
+.deco-badge--closed {
+  background: #d5f0e0;
+  color: #0a6a37;
+}
+
+@media (max-width: 960px) {
+  .deco-cols,
+  .deco-welcome__cols {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 560px) {
+  .deco-statuses {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

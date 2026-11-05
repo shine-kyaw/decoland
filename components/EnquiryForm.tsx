@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Content } from "@/lib/content.en";
 import { CONTACT, type Locale } from "@/lib/site";
 
@@ -9,6 +9,14 @@ type Status = { tone: "ok" | "error"; title: string; text: string } | null;
 export function EnquiryForm({ lang, t }: { lang: Locale; t: Content["contact"]["form"] }) {
   const [sending, setSending] = useState(false);
   const [status, setStatus] = useState<Status>(null);
+  // Arriving from a product page ("Enquire about this product"): remember the
+  // product and start the message with its name.
+  const [product, setProduct] = useState<{ id: string; title: string } | null>(null);
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const id = q.get("product");
+    if (id) setProduct({ id, title: q.get("topic") || "" });
+  }, []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -24,7 +32,7 @@ export function EnquiryForm({ lang, t }: { lang: Locale; t: Content["contact"]["
       const res = await fetch("/api/enquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, viber: data.viber === "on", lang }),
+        body: JSON.stringify({ ...data, viber: data.viber === "on", lang, product: product?.id, sourcePage: window.location.pathname + window.location.search }),
       });
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.ok) {
@@ -86,7 +94,7 @@ export function EnquiryForm({ lang, t }: { lang: Locale; t: Content["contact"]["
       </div>
       <div className="field">
         <label htmlFor="f-message">{t.message}</label>
-        <textarea id="f-message" name="message" required maxLength={5000} placeholder={t.messagePlaceholder} />
+        <textarea id="f-message" name="message" required maxLength={5000} placeholder={t.messagePlaceholder} key={product?.title ?? ""} defaultValue={product?.title ? `${product.title}: ` : ""} />
       </div>
       {/* Honeypot: hidden from people, filled by bots. */}
       <div className="hp" aria-hidden="true">

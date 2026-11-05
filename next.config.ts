@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withPayload } from "@payloadcms/next/withPayload";
 
 /*
   Old WordPress URLs (decolandgroup.com, Enfold theme) → their new homes, so
@@ -33,4 +34,5 @@ const config: NextConfig = {
   },
 };
 
-export default config;
+// Payload wraps the config to mount the admin (/admin) and its API (/api).
+export default withPayload(config, { devBundleServerPackages: false });

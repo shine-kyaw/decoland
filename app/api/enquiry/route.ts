@@ -1,5 +1,9 @@
 /*
-  POST /api/enquiry — emails the Deco-Land sales inbox via Resend.
+  POST /api/enquiry — the public enquiry form.
+
+  With the CMS on (DATABASE_URL set) the enquiry is saved to Inbox → Enquiries
+  in the admin, and that save sends the email / DingTalk / Telegram alerts
+  (payload/alerts.ts). With the CMS off it falls back to emailing via Resend:
 
   Env (Vercel → Settings → Environment Variables):
     RESEND_API_KEY      required; without it the endpoint answers 503
@@ -9,6 +13,8 @@
                         (default marketing@decolandgroup.com)
     ENQUIRY_FROM_EMAIL  sender on a Resend-verified domain
 */
+
+import { getCms, isCmsEnabled } from "@/lib/payload";
 
 const TO = (process.env.ENQUIRY_TO_EMAIL || "marketing@decolandgroup.com")
   .split(",").map((s) => s.trim()).filter(Boolean);
@@ -43,6 +49,30 @@ export async function POST(req: Request) {
   if (!f.name || !f.phone || !f.message) return json(400, { ok: false, error: "Missing required fields." });
   if (!/^[+\d][\d\s()-]{5,}$/.test(f.phone)) return json(400, { ok: false, error: "Phone number looks wrong." });
   if (f.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email)) return json(400, { ok: false, error: "Email looks wrong." });
+
+  // CMS on: save into the admin inbox. Its afterChange hook sends the email,
+  // DingTalk and Telegram alerts (payload/alerts.ts), so saving is enough.
+  if (isCmsEnabled()) {
+    try {
+      const payload = await getCms();
+      const productId = typeof body.product === "string" || typeof body.product === "number" ? body.product : undefined;
+      await payload!.create({
+        collection: "enquiries",
+        overrideAccess: true,
+        data: {
+          name: f.name, company: f.company, phone: f.phone, email: f.email || undefined, viberOk: viber,
+          customerType: f.who, topic: f.about, message: f.message,
+          product: productId || undefined,
+          sourcePage: String(body.sourcePage ?? "").slice(0, 300),
+          lang: body.lang === "my" ? "my" : "en",
+        } as never,
+      });
+      return json(200, { ok: true });
+    } catch (err) {
+      console.error("[enquiry] saving to the CMS failed:", err);
+      return json(502, { ok: false, reason: "delivery-failed" });
+    }
+  }
 
   if (!process.env.RESEND_API_KEY) {
     console.error("[enquiry] RESEND_API_KEY is not set");
