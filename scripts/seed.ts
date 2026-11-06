@@ -18,6 +18,7 @@ import config from "../payload.config";
 import { en } from "../lib/content.en";
 import { my } from "../lib/content.my";
 import type { Content } from "../lib/content.en";
+import * as innerPages from "./pages";
 
 type Any = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1")), "..");
@@ -196,6 +197,22 @@ async function main() {
   await upsert(payload, "pages", { slug: { equals: "home" } }, { title: "Home", slug: "home", layout: homeEn },
     (created) => ({ title: "ပင်မစာမျက်နှာ", layout: withIds(created.layout, home(my)) }));
   log("home page");
+
+  // Inner pages, as page-builder sections in both languages.
+  const apoloUrl = "https://apolostationery.com";
+  const inner: Array<[string, string, string, (t: Content) => Any[]]> = [
+    ["about", en.nav.about, my.nav.about, innerPages.about],
+    ["paper", en.nav.paper, my.nav.paper, innerPages.paper],
+    ["stationery", en.nav.stationery, my.nav.stationery, (t) => innerPages.stationery(t, apoloUrl)],
+    ["services", en.nav.services, my.nav.services, innerPages.services],
+    ["group", en.nav.group, my.nav.group, innerPages.group],
+    ["contact", en.nav.contact, my.nav.contact, innerPages.contact],
+  ];
+  for (const [slug, titleEn, titleMy, build] of inner) {
+    await upsert(payload, "pages", { slug: { equals: slug } }, { title: titleEn, slug, layout: build(en) },
+      (created) => ({ title: titleMy, layout: withIds(created.layout, build(my)) }));
+  }
+  log(`${inner.length} inner pages`);
 
   process.exit(0);
 }

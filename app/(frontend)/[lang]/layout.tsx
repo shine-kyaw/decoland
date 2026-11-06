@@ -46,7 +46,9 @@ export default async function LangLayout({ children, params }: { children: React
   };
 
   return (
-    <html lang={lang} className={`${archivo.variable} ${instrument.variable} ${plexMono.variable} ${notoMy.variable}`}>
+    // suppressHydrationWarning: the inline script below adds the "js" class
+    // before React hydrates, which is intentional.
+    <html lang={lang} suppressHydrationWarning className={`${archivo.variable} ${instrument.variable} ${plexMono.variable} ${notoMy.variable}`}>
       <head>
         {/* Marks JS as running so [data-reveal] content may start hidden. */}
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />

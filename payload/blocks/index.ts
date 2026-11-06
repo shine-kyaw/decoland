@@ -126,7 +126,12 @@ export const ServicesGrid: Block = {
   labels: { singular: "Services", plural: "Services" },
   fields: [
     kicker, heading, text,
-    { name: "items", type: "array", maxRows: 6, fields: [...imageField("image", "Image"), { name: "title", type: "text", localized: true, required: true }, text] },
+    { name: "items", type: "array", maxRows: 6, fields: [
+      ...imageField("image", "Image"),
+      { name: "title", type: "text", localized: true, required: true },
+      text,
+      { name: "points", type: "textarea", localized: true, admin: { description: "Optional bullet list, one item per line." } },
+    ] },
     linkFields("link", "Button"),
   ],
 };
@@ -219,11 +224,90 @@ export const ProductGrid: Block = {
   ],
 };
 
+
+/* ── Inner-page sections ─────────────────────────────────────────────── */
+
+export const PageHeader: Block = {
+  slug: "pageHeader",
+  labels: { singular: "Page header", plural: "Page headers" },
+  imageURL: "/img/hero-entrance.jpg",
+  fields: [
+    kicker,
+    { name: "title", type: "text", localized: true, required: true, admin: { description: "The main heading of the page." } },
+    { name: "lead", type: "textarea", localized: true },
+    ...imageField("image", "Photo"),
+    { name: "focus", type: "select", defaultValue: "center", options: ["left", "center", "right"] },
+    linkFields("primary", "Main button"),
+    linkFields("secondary", "Second button"),
+  ],
+};
+
+export const Timeline: Block = {
+  slug: "timeline",
+  labels: { singular: "Timeline", plural: "Timelines" },
+  fields: [
+    kicker, heading,
+    { name: "items", type: "array", fields: [
+      { type: "row", fields: [
+        { name: "year", type: "text", required: true, admin: { width: "25%" } },
+        { name: "text", type: "text", localized: true, required: true, admin: { width: "75%" } },
+      ] },
+    ] },
+  ],
+};
+
+export const Steps: Block = {
+  slug: "steps",
+  labels: { singular: "Numbered steps", plural: "Numbered steps" },
+  fields: [kicker, heading, text, { name: "items", type: "array", fields: [{ name: "title", type: "text", localized: true, required: true }] }],
+};
+
+export const Places: Block = {
+  slug: "places",
+  labels: { singular: "Addresses and map", plural: "Addresses and maps" },
+  fields: [
+    kicker, heading,
+    { name: "showHours", type: "checkbox", defaultValue: true, label: "Show opening hours" },
+    { name: "note", type: "text", localized: true, admin: { description: "Addresses and hours come from Settings, Site Settings." } },
+  ],
+};
+
+export const CategoryDetails: Block = {
+  slug: "categoryDetails",
+  labels: { singular: "Category list with products", plural: "Category lists with products" },
+  fields: [
+    kicker, heading, text,
+    { name: "division", type: "select", required: true, options: ["paper", "stationery", "services"] },
+    { name: "display", type: "select", defaultValue: "chips", options: [
+      { label: "Product names as tags, for paper grades", value: "chips" },
+      { label: "Product photo cards, for stationery", value: "cards" },
+    ] },
+  ],
+};
+
+export const Companies: Block = {
+  slug: "companies",
+  labels: { singular: "Group company cards", plural: "Group company cards" },
+  fields: [kicker, heading, text, { name: "note", type: "text", localized: true, admin: { description: "Companies come from Company, Group Companies." } }],
+};
+
+export const ContactSection: Block = {
+  slug: "contactSection",
+  labels: { singular: "Contact options and form", plural: "Contact options and forms" },
+  fields: [
+    kicker, heading, text,
+    { name: "formTitle", type: "text", localized: true },
+    { name: "formText", type: "textarea", localized: true },
+    ...imageField("image", "Photo beside the form"),
+  ],
+};
+
 // Sections are identified by their type ("Hero slider" etc.), so the optional
 // per-section name box is switched off — it only ever showed "Untitled".
 const named = (b: Block): Block => ({ ...b, admin: { ...b.admin, disableBlockName: true } });
 
 export const allBlocks: Block[] = [
+  PageHeader, Timeline, Steps, Places, CategoryDetails, Companies, ContactSection,
   HeroSlider, Stats, ImageCards, CategoryGrid, LogoWall, ProductRail, Facility, ServicesGrid,
   GroupStrip, VisionMission, ContactBand, TextImage, RichTextBlock, Gallery, CTA,
   PostsList, JobsList, DownloadsList, ProductGrid,

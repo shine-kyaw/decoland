@@ -175,6 +175,141 @@ export interface Page {
     | (
         | {
             /**
+             * Small label above the heading.
+             */
+            kicker?: string | null;
+            /**
+             * The main heading of the page.
+             */
+            title: string;
+            lead?: string | null;
+            /**
+             * Upload or choose an image from the Media library.
+             */
+            image?: (number | null) | Media;
+            /**
+             * The photo this item came with. Used only when nothing is uploaded above.
+             */
+            imageSrc?: string | null;
+            focus?: ('left' | 'center' | 'right') | null;
+            primary?: {
+              label?: string | null;
+              /**
+               * e.g. /paper, /contact#enquiry or https://…
+               */
+              url?: string | null;
+            };
+            secondary?: {
+              label?: string | null;
+              /**
+               * e.g. /paper, /contact#enquiry or https://…
+               */
+              url?: string | null;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'pageHeader';
+          }
+        | {
+            /**
+             * Small label above the heading.
+             */
+            kicker?: string | null;
+            heading?: string | null;
+            items?:
+              | {
+                  year: string;
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'timeline';
+          }
+        | {
+            /**
+             * Small label above the heading.
+             */
+            kicker?: string | null;
+            heading?: string | null;
+            text?: string | null;
+            items?:
+              | {
+                  title: string;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'steps';
+          }
+        | {
+            /**
+             * Small label above the heading.
+             */
+            kicker?: string | null;
+            heading?: string | null;
+            showHours?: boolean | null;
+            /**
+             * Addresses and hours come from Settings, Site Settings.
+             */
+            note?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'places';
+          }
+        | {
+            /**
+             * Small label above the heading.
+             */
+            kicker?: string | null;
+            heading?: string | null;
+            text?: string | null;
+            division: 'paper' | 'stationery' | 'services';
+            display?: ('chips' | 'cards') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'categoryDetails';
+          }
+        | {
+            /**
+             * Small label above the heading.
+             */
+            kicker?: string | null;
+            heading?: string | null;
+            text?: string | null;
+            /**
+             * Companies come from Company, Group Companies.
+             */
+            note?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'companies';
+          }
+        | {
+            /**
+             * Small label above the heading.
+             */
+            kicker?: string | null;
+            heading?: string | null;
+            text?: string | null;
+            formTitle?: string | null;
+            formText?: string | null;
+            /**
+             * Upload or choose an image from the Media library.
+             */
+            image?: (number | null) | Media;
+            /**
+             * The photo this item came with. Used only when nothing is uploaded above.
+             */
+            imageSrc?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'contactSection';
+          }
+        | {
+            /**
              * Full-width photos that change every few seconds. The first slide's title is the page's main heading.
              */
             slides?:
@@ -410,6 +545,10 @@ export interface Page {
                   imageSrc?: string | null;
                   title: string;
                   text?: string | null;
+                  /**
+                   * Optional bullet list, one item per line.
+                   */
+                  points?: string | null;
                   id?: string | null;
                 }[]
               | null;
@@ -1292,6 +1431,104 @@ export interface PagesSelect<T extends boolean = true> {
   layout?:
     | T
     | {
+        pageHeader?:
+          | T
+          | {
+              kicker?: T;
+              title?: T;
+              lead?: T;
+              image?: T;
+              imageSrc?: T;
+              focus?: T;
+              primary?:
+                | T
+                | {
+                    label?: T;
+                    url?: T;
+                  };
+              secondary?:
+                | T
+                | {
+                    label?: T;
+                    url?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        timeline?:
+          | T
+          | {
+              kicker?: T;
+              heading?: T;
+              items?:
+                | T
+                | {
+                    year?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        steps?:
+          | T
+          | {
+              kicker?: T;
+              heading?: T;
+              text?: T;
+              items?:
+                | T
+                | {
+                    title?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        places?:
+          | T
+          | {
+              kicker?: T;
+              heading?: T;
+              showHours?: T;
+              note?: T;
+              id?: T;
+              blockName?: T;
+            };
+        categoryDetails?:
+          | T
+          | {
+              kicker?: T;
+              heading?: T;
+              text?: T;
+              division?: T;
+              display?: T;
+              id?: T;
+              blockName?: T;
+            };
+        companies?:
+          | T
+          | {
+              kicker?: T;
+              heading?: T;
+              text?: T;
+              note?: T;
+              id?: T;
+              blockName?: T;
+            };
+        contactSection?:
+          | T
+          | {
+              kicker?: T;
+              heading?: T;
+              text?: T;
+              formTitle?: T;
+              formText?: T;
+              image?: T;
+              imageSrc?: T;
+              id?: T;
+              blockName?: T;
+            };
         heroSlider?:
           | T
           | {
@@ -1449,6 +1686,7 @@ export interface PagesSelect<T extends boolean = true> {
                     imageSrc?: T;
                     title?: T;
                     text?: T;
+                    points?: T;
                     id?: T;
                   };
               link?:

@@ -20,6 +20,13 @@ import { PostsListBlock } from "./PostsListBlock";
 import { JobsListBlock } from "./JobsListBlock";
 import { DownloadsListBlock } from "./DownloadsListBlock";
 import { ProductGridBlock } from "./ProductGridBlock";
+import { PageHeaderBlock } from "./PageHeaderBlock";
+import { TimelineBlock } from "./TimelineBlock";
+import { StepsBlock } from "./StepsBlock";
+import { PlacesBlock } from "./PlacesBlock";
+import { CategoryDetailsBlock } from "./CategoryDetailsBlock";
+import { CompaniesBlock } from "./CompaniesBlock";
+import { ContactSectionBlock } from "./ContactSectionBlock";
 
 type Renderer = (props: BlockProps) => ReactNode;
 
@@ -43,6 +50,13 @@ const MAP: Record<string, Renderer> = {
   jobsList: JobsListBlock,
   downloadsList: DownloadsListBlock,
   productGrid: ProductGridBlock,
+  pageHeader: PageHeaderBlock,
+  timeline: TimelineBlock,
+  steps: StepsBlock,
+  places: PlacesBlock,
+  categoryDetails: CategoryDetailsBlock,
+  companies: CompaniesBlock,
+  contactSection: ContactSectionBlock,
 };
 
 export function RenderBlocks({ blocks, lang, ctx }: { blocks: Block[] | null | undefined; lang: Locale; ctx: BlockContext }) {
