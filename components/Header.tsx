@@ -2,22 +2,47 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Content } from "@/lib/content.en";
 import { CONTACT, hrefFor, type Locale } from "@/lib/site";
 
 const LINKS = ["about", "paper", "stationery", "services", "group", "contact"] as const;
+const SEARCH = {
+  en: { label: "Search the site", placeholder: "Search products, news, pages", go: "Search", open: "Open search", close: "Close search" },
+  my: { label: "ဝက်ဘ်ဆိုက်တွင် ရှာဖွေရန်", placeholder: "ထုတ်ကုန်၊ သတင်း၊ စာမျက်နှာ ရှာရန်", go: "ရှာဖွေရန်", open: "ရှာဖွေရန် ဖွင့်ရန်", close: "ရှာဖွေရန် ပိတ်ရန်" },
+};
 
 export function Header({ lang, t }: { lang: Locale; t: Content }) {
   const pathname = usePathname() || `/${lang}`;
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const searchBtn = useRef<HTMLButtonElement>(null);
+  const searchInput = useRef<HTMLInputElement>(null);
+  const s = SEARCH[lang];
 
   // Same page in the other language: swap the first segment.
   const rest = pathname.replace(/^\/(en|my)(?=\/|$)/, "");
   const current = rest.replace(/^\//, "");
 
-  useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => { setOpen(false); setSearchOpen(false); }, [pathname]);
+  useEffect(() => {
+    if (!searchOpen) return;
+    searchInput.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { setSearchOpen(false); searchBtn.current?.focus(); }
+    };
+    const onDown = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) setSearchOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onDown);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onDown);
+    };
+  }, [searchOpen]);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
@@ -57,6 +82,19 @@ export function Header({ lang, t }: { lang: Locale; t: Content }) {
             ))}
           </nav>
 
+          <div className="hsearch" ref={searchRef}>
+            <button ref={searchBtn} type="button" className="hsearch__btn" aria-expanded={searchOpen} aria-controls="hsearch-panel" aria-label={searchOpen ? s.close : s.open} onClick={() => setSearchOpen((v) => !v)}>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+            </button>
+            {searchOpen && (
+              <form id="hsearch-panel" className="hsearch__panel" action={`/${lang}/search`} method="get" role="search">
+                <label className="sr-only" htmlFor="hsearch-q">{s.label}</label>
+                <input ref={searchInput} id="hsearch-q" name="q" type="search" placeholder={s.placeholder} autoComplete="off" />
+                <button type="submit" className="btn">{s.go}</button>
+              </form>
+            )}
+          </div>
+
           <div className="lang" role="group" aria-label={t.nav.language}>
             <a href={`/en${rest}`} hrefLang="en" lang="en" aria-current={lang === "en"}>EN</a>
             <a href={`/my${rest}`} hrefLang="my" lang="my" aria-current={lang === "my"}>မြန်မာ</a>
@@ -78,6 +116,11 @@ export function Header({ lang, t }: { lang: Locale; t: Content }) {
 
       {open && (
         <nav id="drawer" className="drawer" aria-label="Mobile">
+          <form className="drawer__search" action={`/${lang}/search`} method="get" role="search">
+            <label className="sr-only" htmlFor="drawer-q">{s.label}</label>
+            <input id="drawer-q" name="q" type="search" placeholder={s.placeholder} autoComplete="off" />
+            <button type="submit" className="btn">{s.go}</button>
+          </form>
           <Link className="drawer__link" href={hrefFor(lang, "")} aria-current={current === "" ? "page" : undefined}>{t.nav.home}</Link>
           {LINKS.map((key) => (
             <Link key={key} className="drawer__link" href={hrefFor(lang, key)} aria-current={isCurrent(key) ? "page" : undefined}>

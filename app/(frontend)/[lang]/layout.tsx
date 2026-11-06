@@ -6,6 +6,10 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ContactBar } from "@/components/ContactBar";
 import { Reveal } from "@/components/Reveal";
+import { ChatButton } from "@/components/ChatButton";
+import { PageViewBeacon } from "@/components/PageViewBeacon";
+import { isCmsEnabled } from "@/lib/payload";
+import { getSettings } from "@/lib/cms";
 import { getContent } from "@/lib/dict";
 import { CONTACT, LOCALES, SITE_URL, isLocale } from "@/lib/site";
 
@@ -27,6 +31,14 @@ export default async function LangLayout({ children, params }: { children: React
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
   const t = getContent(lang);
+
+  // Chat button: CMS settings when available, built-in contact details otherwise.
+  const settings = (await getSettings(lang)) as Record<string, unknown> | null;
+  const str = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim() : "");
+  const messenger = str(settings?.messenger) || CONTACT.messenger;
+  const viberDigits = str(settings?.viber).replace(/\D/g, "");
+  const viber = viberDigits ? `viber://chat?number=%2B${viberDigits}` : CONTACT.viber;
+  const showChat = settings?.showChatButton !== false;
 
   const org = {
     "@context": "https://schema.org",
@@ -60,7 +72,10 @@ export default async function LangLayout({ children, params }: { children: React
         <main id="main">{children}</main>
         <Footer lang={lang} t={t} />
         <ContactBar t={t} />
+        {showChat && <ChatButton lang={lang} messenger={messenger} viber={viber} />}
         <Reveal />
+        {/* Visit counter only runs when the CMS (and its database) is on. */}
+        {isCmsEnabled() && <PageViewBeacon />}
       </body>
     </html>
   );

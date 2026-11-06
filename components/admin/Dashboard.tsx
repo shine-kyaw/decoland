@@ -1,5 +1,6 @@
 import React from "react";
 import type { Payload } from "payload";
+import { visitSummary, type VisitSummary } from "@/lib/analytics";
 
 /*
  * WordPress-style admin home: white "postbox" panels in two columns.
@@ -218,6 +219,8 @@ export const Dashboard = async ({ payload, user }: Props) => {
         </div>
       </Box>
 
+      {!isSales && <SiteVisits payload={payload} />}
+
       <div className="deco-cols">
         <div className="deco-col">
           {!isSales && (
@@ -327,5 +330,57 @@ export const Dashboard = async ({ payload, user }: Props) => {
     </div>
   );
 };
+
+/* ── Site visits (privacy-friendly counter, lib/analytics.ts) ─────────── */
+async function SiteVisits({ payload }: { payload: Props["payload"] }) {
+  let v: VisitSummary | null = null;
+  try {
+    if (payload) v = await visitSummary(payload);
+  } catch {
+    v = null;
+  }
+  const max = Math.max(1, ...(v?.days.map((d) => d.views) ?? [1]));
+  const n = (x: number) => x.toLocaleString("en-US");
+  return (
+    <Box title="Site visits — last 30 days" wide>
+      {v === null ? (
+        <p className="deco-empty">Visits could not be loaded just now.</p>
+      ) : (
+        <div className="deco-visits">
+          <div className="deco-visits__nums">
+            <div><strong>{n(v.today)}</strong><span>Today</span></div>
+            <div><strong>{n(v.last7)}</strong><span>Last 7 days</span></div>
+            <div><strong>{n(v.last30)}</strong><span>Last 30 days</span></div>
+          </div>
+          <svg className="deco-visits__chart" viewBox="0 0 300 60" preserveAspectRatio="none" role="img" aria-label="Page views per day, last 30 days">
+            {v.days.map((d, i) => {
+              const h = Math.max(1, (d.views / max) * 56);
+              return (
+                <rect key={d.day} x={i * 10 + 1} y={60 - h} width={8} height={h} rx={1.5}>
+                  <title>{`${d.day}: ${d.views}`}</title>
+                </rect>
+              );
+            })}
+          </svg>
+          <div className="deco-visits__lists">
+            <div>
+              <h4>Top pages</h4>
+              {v.topPages.length ? (
+                <ol>{v.topPages.map((p) => <li key={p.path}><span>{p.path}</span><b>{n(p.views)}</b></li>)}</ol>
+              ) : <p className="deco-empty">No visits yet.</p>}
+            </div>
+            <div>
+              <h4>Most viewed products</h4>
+              {v.topProducts.length ? (
+                <ol>{v.topProducts.map((p) => <li key={p.slug}><span>{p.slug.replace(/-/g, " ")}</span><b>{n(p.views)}</b></li>)}</ol>
+              ) : <p className="deco-empty">No product views yet.</p>}
+            </div>
+          </div>
+          <p className="deco-visits__note">Counted without cookies or personal data. Bots are excluded.</p>
+        </div>
+      )}
+    </Box>
+  );
+}
 
 export default Dashboard;

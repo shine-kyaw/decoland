@@ -55,7 +55,9 @@ export async function POST(req: Request) {
   if (isCmsEnabled()) {
     try {
       const payload = await getCms();
-      const productId = typeof body.product === "string" || typeof body.product === "number" ? body.product : undefined;
+      // The form sends the product id as text; Postgres ids are numbers.
+      const rawProduct = typeof body.product === "string" || typeof body.product === "number" ? String(body.product) : "";
+      const productId = /^\d+$/.test(rawProduct) ? Number(rawProduct) : undefined;
       await payload!.create({
         collection: "enquiries",
         overrideAccess: true,
