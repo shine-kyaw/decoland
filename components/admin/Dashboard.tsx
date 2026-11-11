@@ -1,6 +1,8 @@
 import React from "react";
 import type { Payload } from "payload";
+import type { Pool } from "pg";
 import { visitSummary, type VisitSummary } from "@/lib/analytics";
+import { readBackupStatus, type BackupStatus } from "@/lib/backup";
 
 /*
  * WordPress-style admin home: white "postbox" panels in two columns.
@@ -219,6 +221,8 @@ export const Dashboard = async ({ payload, user }: Props) => {
         </div>
       </Box>
 
+      {user?.role === "admin" && <Backups payload={payload} />}
+
       {!isSales && <SiteVisits payload={payload} />}
 
       <div className="deco-cols">
@@ -330,6 +334,46 @@ export const Dashboard = async ({ payload, user }: Props) => {
     </div>
   );
 };
+
+/* ── Nightly backup status (lib/backup.ts, app/api/cron/backup) ───────── */
+async function Backups({ payload }: { payload: Props["payload"] }) {
+  let s: BackupStatus | null = null;
+  try {
+    if (payload) s = await readBackupStatus((payload.db as unknown as { pool: Pool }).pool);
+  } catch {
+    s = null;
+  }
+  const okAt = s?.ok ? new Date(s.ok.at).getTime() : 0;
+  const errAt = s?.error ? new Date(s.error.at).getTime() : 0;
+  const stale = !okAt || Date.now() - okAt > 36 * 3600_000;
+  const failing = errAt > okAt;
+  const when = (iso: string) =>
+    new Date(iso).toLocaleString("en-GB", { timeZone: "Asia/Yangon", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+  const mb = (b: number) => `${(b / 1024 / 1024).toFixed(1)} MB`;
+  const tone = s === null ? "" : failing || stale ? " deco-backup--warn" : " deco-backup--ok";
+  return (
+    <Box title="Backups" wide>
+      <div className={`deco-backup${tone}`}>
+        {s === null ? (
+          <p className="deco-empty">Backup status could not be loaded just now.</p>
+        ) : (
+          <>
+            <p>
+              {s.ok ? (
+                <>Last backup: <strong>{when(s.ok.at)}</strong> ({rel(s.ok.at)}), {mb(s.ok.bytes)}, {s.ok.rows.toLocaleString("en-US")} records.</>
+              ) : (
+                <>No backup has been taken yet. The first one runs tonight at 03:00 Yangon time.</>
+              )}
+            </p>
+            {failing && s.error && <p>The latest backup failed on {when(s.error.at)}. Please tell Aster.</p>}
+            {!failing && stale && s.ok && <p>There has been no backup for over a day. Please tell Aster.</p>}
+            <p className="deco-visits__note">A copy of the whole database is saved every night and kept for 30 days, encrypted.</p>
+          </>
+        )}
+      </div>
+    </Box>
+  );
+}
 
 /* ── Site visits (privacy-friendly counter, lib/analytics.ts) ─────────── */
 async function SiteVisits({ payload }: { payload: Props["payload"] }) {

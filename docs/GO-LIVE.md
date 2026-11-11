@@ -15,7 +15,7 @@ Done in step 0. Everything below happens inside **Deco-Land's team**, not Aster'
 
 ## 2. Database (Neon, through Vercel, owned by Deco-Land's team)
 1. Vercel → **decoland** project → **Storage** → **Create Database** → **Neon** (Serverless Postgres).
-2. Choose the **Singapore** region (closest to Yangon) and a **paid plan**, for its days-long restore history. A nightly backup to storage Deco-Land owns runs on top of that (see `docs/BACKUP.md` once built).
+2. Choose the **Singapore** region (closest to Yangon) and a **paid plan**, for its days-long restore history. A nightly encrypted backup runs on top of that. Set it up with the Blob store, `BACKUP_KEY` and `CRON_SECRET`, following `docs/BACKUP.md` → "Setting it up". **Save `BACKUP_KEY` in Deco-Land's password manager before deleting `.env.production.local`.**
 3. Connect it to the **decoland** project for **all environments**. This sets `DATABASE_URL` automatically.
 
 ## 3. The CMS secret, then redeploy
@@ -50,3 +50,4 @@ Recipients for alert emails are set in the admin under Settings → Site setting
 - Apply to a test job with a small PDF CV. Open it from Inbox → Job applications. **This is the one feature not yet tested on a real database.**
 - Edit a sentence on the home page and publish. It should show on the site within seconds.
 - Both `/en` and `/my` load, and `/admin` shows the WordPress-style dashboard.
+- Vercel → Settings → Cron Jobs → **Run** the backup once. The dashboard's Backups panel should turn green and show the time.

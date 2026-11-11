@@ -108,3 +108,21 @@ The database schema is versioned in `migrations/`.
 - The fill runs **once only**. It records that it ran in a `deco_cms_meta` table and skips on every later deploy, so a deploy can never overwrite what editors changed. `npm run seed -- --force` fills it again on purpose.
 - This was tested on an empty database: the first run created all the tables and loaded 117 products, 7 pages and 4 posts in about 2½ minutes. The second run skipped the fill.
 - `docs/GO-LIVE.md` is the step-by-step switch-on checklist.
+
+## 7. Nightly backups (11 Nov)
+
+- **Backup file:** `lib/backup.ts` makes one encrypted file of the whole database.
+  - It covers every table, read inside one consistent snapshot.
+  - It is compressed, then encrypted with AES-256-GCM using `BACKUP_KEY`.
+  - Large file rows are read a few at a time, so memory stays low.
+- **Nightly job:** `app/api/cron/backup` runs every night at 03:00 Yangon time (Vercel Cron, `vercel.json`).
+  - It saves the file to a private Vercel Blob store in Deco-Land's team.
+  - It deletes copies older than 30 days, always keeping the newest 7.
+  - It records the result. Only Vercel's scheduler can call it (`CRON_SECRET`).
+- **Restore:** `npm run restore -- <file> --yes` (`scripts/restore.ts`).
+  - It builds the tables if the database is empty, then loads everything in one transaction.
+  - It turns foreign keys off for the load and back on afterwards, resets the ID counters, and checks every row count.
+  - On any error, including a wrong key or a damaged file, it rolls back and changes nothing.
+- **Local copy:** `npm run backup -- <file>` (`scripts/backup.ts`) writes the same file to your computer.
+- **Dashboard:** administrators see a **Backups** panel, green when fine. It warns if a backup failed or none ran for over a day.
+- **Tested:** a full backup and restore of the seeded CMS (203 tables, 3,473 rows, binary files) matched the source table by table. The Blob upload and the schedule are checked at go-live. Details are in `docs/BACKUP.md`.
