@@ -2,12 +2,20 @@
 
 The code is ready. Going live is mostly settings in the Vercel dashboard, and the order matters. Nothing below changes the current live site until step 3.
 
-## 1. Vercel Pro (before or with the domain)
-Vercel → Team settings → Billing → upgrade to **Pro**. Vercel's Hobby plan is for non-commercial use only, so a company website needs Pro (about $20 a month). Upgrading on its own changes nothing in the site.
+**Ownership (decided 11 Nov 2026):** Deco-Land owns every account that holds their data or bills them: the Vercel team, the database, the email service and the domain. Aster is invited as a member. The code stays in Aster's GitHub.
 
-## 2. Database (Neon, through Vercel)
+## 0. Deco-Land's accounts (Deco-Land does this)
+1. Deco-Land signs up at vercel.com with a **company role email they control**, for example `it@decolandgroup.com`. Not one employee's personal address.
+2. They create a **team** called "Deco-Land" on the **Pro** plan, paid by company card. Hobby is for non-commercial use only.
+3. They invite Shine (Aster) as **Owner** or Member.
+4. Aster then transfers the `decoland` project into that team: Project → Settings → Advanced → **Transfer Project**. The URL and history move with it. Re-check the Git connection to `shine-kyaw/decoland` afterwards.
+
+## 1. Vercel Pro
+Done in step 0. Everything below happens inside **Deco-Land's team**, not Aster's account.
+
+## 2. Database (Neon, through Vercel, owned by Deco-Land's team)
 1. Vercel → **decoland** project → **Storage** → **Create Database** → **Neon** (Serverless Postgres).
-2. Choose the **Singapore** region (closest to Yangon) and the free plan. The free plan's 0.5 GB is enough: all the built-in photos stay as files, so only uploads go into the database.
+2. Choose the **Singapore** region (closest to Yangon) and a **paid plan**, for its days-long restore history. A nightly backup to storage Deco-Land owns runs on top of that (see `docs/BACKUP.md` once built).
 3. Connect it to the **decoland** project for **all environments**. This sets `DATABASE_URL` automatically.
 
 ## 3. The CMS secret, then redeploy
