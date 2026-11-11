@@ -1,10 +1,15 @@
 /*
   Seed the CMS with the site's current content, in English and Burmese.
 
-    npm run seed            (needs DATABASE_URL + PAYLOAD_SECRET)
+    npm run seed             (needs DATABASE_URL + PAYLOAD_SECRET)
+    npm run seed -- --force  (fill again although it already ran once)
 
-  Safe to re-run: every item is looked up by its slug/name first and updated
-  rather than duplicated. It never creates users (create the first admin at
+  Runs on every deploy (scripts/migrate-if-configured.mjs) but fills the
+  database only ONCE: it records that in the deco_cms_meta table and does
+  nothing afterwards, so a deploy can never overwrite what editors changed.
+
+  Every item is looked up by its slug/name first and updated rather than
+  duplicated. It never creates users (create the first admin at
   /admin) and never touches the Inbox.
 
   Localised fields: each document is created in English, then updated in
@@ -102,9 +107,30 @@ const BRANDS = [
 ] as const;
 const GROUP_LOGOS = ["aff-main-label", "aff-hitachielevators", "aff-decotbsp", "aff-moderntech"];
 
+// A one-row marker, outside Payload's own schema, recording that the seed ran.
+const MARKER_TABLE = "deco_cms_meta";
+const pool = (payload: Payload) => (payload.db as unknown as { pool: import("pg").Pool }).pool;
+
+async function alreadySeeded(payload: Payload): Promise<boolean> {
+  await pool(payload).query(`CREATE TABLE IF NOT EXISTS ${MARKER_TABLE} (key text PRIMARY KEY, value text, at timestamptz NOT NULL DEFAULT now())`);
+  const { rows } = await pool(payload).query(`SELECT at FROM ${MARKER_TABLE} WHERE key = 'seeded'`);
+  return rows.length > 0;
+}
+
+async function markSeeded(payload: Payload) {
+  await pool(payload).query(`INSERT INTO ${MARKER_TABLE} (key, value) VALUES ('seeded', 'built-in website content') ON CONFLICT (key) DO NOTHING`);
+}
+
 async function main() {
+  if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is not set. Point it at the CMS database, then run `npm run seed` again.");
+  const force = process.argv.includes("--force");
   const payload = await getPayload({ config });
   const log = (m: string) => payload.logger.info(`[seed] ${m}`);
+
+  if (!force && (await alreadySeeded(payload))) {
+    log("content was already seeded on an earlier deploy; leaving the CMS as editors have it.");
+    process.exit(0);
+  }
 
   // Settings and menus
   await payload.updateGlobal({ slug: "site-settings", locale: "en", data: {
@@ -214,6 +240,8 @@ async function main() {
   }
   log(`${inner.length} inner pages`);
 
+  await markSeeded(payload);
+  log("done. Open /admin: with no account yet, it asks you to create the first one.");
   process.exit(0);
 }
 
